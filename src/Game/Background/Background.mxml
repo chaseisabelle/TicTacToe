@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%" height="100%"
+	x="0" y="0"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	enterFrame="enterFrame();"
+	resize="resize();"
+	initialize="constructor();">
+	
+	<mx:Script>
+		<![CDATA[
+		
+			import mx.collections.ArrayCollection;
+			
+			private function constructor():void {
+				var i:uint;
+				var backgroundShape:BackgroundShape;
+				
+				for (i = 0; i < maxBackgroundShapes; i++) {
+					backgroundShape = new BackgroundShape();
+					
+					addChild(backgroundShape);
+					
+					backgroundShapes.addItem(backgroundShape);
+				}
+				
+				resize();
+			}
+			
+			private function resize():void {
+				var i:uint;
+				var backgroundShape:BackgroundShape;
+				
+				for (i = 0; i < backgroundShapes.length; i++) {
+					backgroundShape = (BackgroundShape)(backgroundShapes.getItemAt(i));
+					
+					backgroundShape.maxWidth = width / 4;
+					backgroundShape.minWidth = width / 8;
+					
+					backgroundShape.maxHeight = backgroundShape.maxWidth;
+					backgroundShape.minHeight = backgroundShape.minWidth;
+				}
+				
+				render();
+			}
+			
+			private function enterFrame():void {
+				// empty body
+			}
+			
+			private function render():void {
+				// empty body
+			}
+			
+			public var maxBackgroundShapes:Number = 20;
+			
+			private var backgroundShapes:ArrayCollection = new ArrayCollection();
+			
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>

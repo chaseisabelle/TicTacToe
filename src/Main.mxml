@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:Menu="Menu.*"
+	xmlns:Game="Game.*"
+	layout="absolute"
+	width="100%" height="100%"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	frameRate="100"
+	enterFrame="enterFrame();"
+	resize="resize();"
+	initialize="constructor();" xmlns:Veil="Veil.*">
+	
+	<Game:Game id="game" name="game"
+		width="100%" height="100%"
+		x="0" y="0" />
+		
+	<Veil:Veil id="veil" name="veil"
+		width="100%" height="100%"
+		x="0" y="0" />
+	
+	<mx:Script>
+		<![CDATA[
+		
+			import mx.controls.Label;
+		
+			private function constructor():void {
+				main = this;
+				
+				resize();
+			}
+			
+			private function resize():void {
+				render();
+			}
+			
+			private function enterFrame():void {
+				switch (Main.status) {
+					case Main.PAUSED:
+						paused();
+						break;
+					case Main.STARTING:
+						starting();
+						break;
+					case Main.STOPPING:
+						stopping();
+						break;
+					case Main.PLAYER_ONE_THINKING:
+						playerOneThinking();
+						break;
+					case Main.PLAYER_TWO_THINKING:
+						playerTwoThinking();
+						break;
+					case Main.PLAYER_ONE_CLICKED:
+						playerOneClicked();
+						break;
+					case Main.PLAYER_TWO_CLICKED:
+						playerTwoClicked();
+						break;
+					case Main.PLAYER_ONE_WIN:
+						playerOneWin();
+						break;
+					case Main.PLAYER_TWO_WIN:
+						playerTwoWin();
+						break;
+					case Main.TIE:
+						tie();
+						break;
+					default:
+						other();
+				}
+			}
+			
+			private function render():void {
+				// empty body
+			}
+			
+			private function paused():void {
+				Main.status = Main.PLAYER_ONE_THINKING;
+			}
+			
+			private function starting():void {
+				// empty body
+			}
+			
+			private function stopping():void {
+				// empty body
+			}
+			
+			private function playerOneThinking():void {
+				// empty body
+			}
+			
+			private function playerTwoThinking():void {
+				// empty body
+			}
+			
+			private function playerOneClicked():void {
+				// empty boy
+			}
+			
+			private function playerTwoClicked():void {
+				// empty body
+			}
+			
+			private function playerOneWin():void {
+				// emptyb ody
+			}
+			
+			private function playerTwoWin():void {
+				// empty body
+			}
+			
+			private function tie():void {
+				// emptyb ody
+			}
+			
+			private function other():void {
+				// empty body
+			}
+			
+			public static var main:Main;
+			
+			public static const DEFAULT:Number = 0;
+			public static const X:Number = 0.1;
+			public static const O:Number = 0.2;
+			
+			public static const PLAYER_ONE:Number = X;
+			public static const PLAYER_TWO:Number = O;
+		
+			public static const PAUSED:Number = 1.0;
+			public static const STARTING:Number = 1.1;
+			public static const STOPPING:Number = 1.2;
+			public static const PLAYER_ONE_CLICKED:Number = 2.1;
+			public static const PLAYER_TWO_CLICKED:Number = 3.1;
+			public static const PLAYER_ONE_THINKING:Number = 2.2;
+			public static const PLAYER_TWO_THINKING:Number = 3.2;
+			public static const PLAYER_ONE_WIN:Number = 2.3;
+			public static const PLAYER_TWO_WIN:Number = 3.3;
+			public static const TIE:Number = 4.0;
+			
+			public static var status:Number = STARTING;
+			
+		]]>
+	</mx:Script>
+	
+</mx:Application>

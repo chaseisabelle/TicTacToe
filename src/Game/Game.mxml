@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:Game="Game.*" xmlns:Background="Game.Background.*" xmlns:Board="Board.*" xmlns:Player="Player.*"
+	width="100%" height="100%"
+	x="0" y="0"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	enterFrame="enterFrame();"
+	resize="resize();"
+	initialize="constructor();">
+	
+	<Background:Background name="background" id="background" />
+	
+	<Board:Board id="board" name="board" />
+	
+	<Player:Player name="playerOne" id="playerOne" />
+	
+	<Player:Player name="playerTwo" id="playerTwo" />
+	
+	<mx:Script>
+		<![CDATA[
+		
+			import MediaObject.MediaObject;
+			
+			private function constructor():void {
+				game = this;
+				
+				playerOne.setPlayerNumber(Main.PLAYER_ONE);
+				playerTwo.setPlayerNumber(Main.PLAYER_TWO);
+				
+				MediaObject.MediaObject.musicSound.play(0, 0xFFFFFF);
+				
+				resize();
+			}
+			
+			private function resize():void {
+				board.width = width / 3;
+				board.height = (height / 3) * 2;
+				board.x = (width / 2) - (board.width / 2);
+				board.y = (height / 2) - (board.height / 2);
+				
+				playerOne.width = width / 3;
+				playerOne.height = height / 3;
+				playerOne.x = 0;
+				playerOne.y = (height / 2) - (playerOne.height / 2);
+				
+				playerTwo.width = width / 3;
+				playerTwo.height = height / 3;
+				playerTwo.x = board.x + board.width;
+				playerTwo.y = (height / 2) - (playerTwo.height / 2);
+					
+				render();
+			}
+			
+			private function enterFrame():void {
+				switch (Main.status) {
+					case Main.PAUSED:
+						paused();
+						break;
+					case Main.STARTING:
+						starting();
+						break;
+					case Main.STOPPING:
+						stopping();
+						break;
+					case Main.PLAYER_ONE_THINKING:
+						playerOneThinking();
+						break;
+					case Main.PLAYER_TWO_THINKING:
+						playerTwoThinking();
+						break;
+					case Main.PLAYER_ONE_CLICKED:
+						playerOneClicked();
+						break;
+					case Main.PLAYER_TWO_CLICKED:
+						playerTwoClicked();
+						break;
+					case Main.PLAYER_ONE_WIN:
+						playerOneWin();
+						break;
+					case Main.PLAYER_TWO_WIN:
+						playerTwoWin();
+						break;
+					case Main.TIE:
+						tie();
+						break;
+					default:
+						other();
+				}
+			}
+			
+			private function render():void {
+				graphics.clear();
+				
+				graphics.beginFill(backgroundColor);
+				graphics.drawRect(0, 0, width, height);
+				graphics.endFill();
+			}
+			
+			private function paused():void {
+				Main.status = Main.PLAYER_ONE_THINKING;
+			}
+			
+			private function starting():void {
+				// empty body
+			}
+			
+			private function stopping():void {
+				// empty body
+			}
+			
+			private function playerOneThinking():void {
+				// empty body
+			}
+			
+			private function playerTwoThinking():void {
+				//empty body
+			}
+			
+			private function playerOneClicked():void {
+				// empty boy
+			}
+			
+			private function playerTwoClicked():void {
+				// empty body
+			}
+			
+			private function playerOneWin():void {
+				if (pauseCounter < pauseInterval) {
+					pauseCounter++;
+				} else {
+					pauseCounter = 0;
+					reset();
+					Main.status = Main.PLAYER_TWO_THINKING;
+				}
+			}
+			
+			private function playerTwoWin():void {
+				if (pauseCounter < pauseInterval) {
+					pauseCounter++;
+				} else {
+					pauseCounter = 0;
+					reset();
+					Main.status = Main.PLAYER_ONE_THINKING;
+				}
+			}
+			
+			private function tie():void {
+				if (pauseCounter < pauseInterval) {
+					pauseCounter++;
+				} else {
+					pauseCounter = 0;
+					reset();
+					Main.status = Main.PLAYER_ONE_THINKING;
+				}
+			}
+			
+			private function other():void {
+				// empty body
+			}
+			
+			public function reset():void {
+				board.reset();
+				resize();
+			}
+			
+			public static const backgroundColor:uint = 0xFFFFFF;
+			
+			public static var pauseInterval:Number = 100;
+			private var pauseCounter:Number = 0;
+			
+			public static var game:Game;
+			
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>

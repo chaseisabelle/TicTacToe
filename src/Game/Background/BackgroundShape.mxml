@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	x="0" y="0"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	enterFrame="enterFrame();"
+	resize="resize();"
+	initialize="constructor();">
+	
+	<mx:Script>
+		<![CDATA[
+		
+			import mx.collections.ArrayCollection;
+			
+			private function constructor():void {
+				alpha = 0;
+				
+				resize();
+			}
+			
+			private function resize():void {
+				randomize();
+				
+				render();
+			}
+			
+			private function enterFrame():void {
+				switch (status) {
+					case FADE_IN:
+						fadeIn();
+						break;
+					case FADE_OUT:
+						fadeOut();
+						break;
+					case WAIT:
+						wait();
+						break;
+					default:
+						// nothing
+				}
+			}
+			
+			private function render():void {
+				graphics.clear();
+				
+				graphics.beginFill(color, alpha);
+				graphics.drawEllipse(0, 0, width, height);
+				graphics.endFill();
+			}
+			
+			private function randomize():void {
+				interval = Math.random() * (maxInterval - minInterval) + minInterval;
+				
+				width = Math.random() * (maxWidth - minWidth) + minWidth;
+				height = Math.random() * (maxHeight - minHeight) + minHeight;
+				
+				x = Math.random() * (((Canvas)(parent)).width - width);
+				y = Math.random() * (((Canvas)(parent)).height - height);
+				
+				deltaX = Math.random() * (maxDeltaX - minDeltaX) + minDeltaX;
+				deltaY = Math.random() * (maxDeltaY - minDeltaY) + minDeltaY;
+				
+				color = Math.abs(Math.random()) * Math.pow(2, 32);
+			}
+			
+			private function fadeIn():void {
+				if (status != FADE_IN) {
+					return;
+				}
+				
+				if (alpha >= 1) {
+					alpha = 1;
+					status = FADE_OUT;
+				}
+				
+				alpha += alphaIncrementer;
+				
+				x += deltaX;
+				y += deltaY;
+				
+				render();
+			}
+			
+			private function fadeOut():void {
+				if (status != FADE_OUT) {
+					return;
+				}
+				
+				if (alpha <= 0) {
+					alpha = 0;
+					status = WAIT;
+				}
+				
+				alpha -= alphaIncrementer;
+				
+				x += deltaX;
+				y += deltaY;
+				
+				render();
+			}
+			
+			private function wait():void {
+				if (status != WAIT) {
+					return;
+				}
+				
+				interval--;
+
+				if (interval <= 0) {
+					randomize();
+					status = FADE_IN;
+				}
+			}
+			
+			public var maxInterval:Number = 1000;
+			public var minInterval:Number = 0;
+			
+			private var interval:Number;
+			
+			public var maxDeltaX:Number = 2;
+			public var minDeltaX:Number = -2;
+			
+			public var maxDeltaY:Number = maxDeltaX;
+			public var minDeltaY:Number = minDeltaX;
+			
+			private var deltaX:Number = 0;
+			private var deltaY:Number = 0;
+			
+			private var color:uint;
+			
+			public var alphaIncrementer:Number = 0.005;
+			
+			private static const FADE_IN:Number = 1;
+			private static const WAIT:Number = 0;
+			private static const FADE_OUT:Number = -1;
+			
+			private var status:Number = WAIT;
+			
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>

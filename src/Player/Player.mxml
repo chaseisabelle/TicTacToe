@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:Game="Game.*" xmlns:Background="Game.Background.*" xmlns:Board="Board.*"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	enterFrame="enterFrame();"
+	resize="resize();"
+	initialize="constructor();" xmlns:Player="Player.*">
+	
+	<mx:Image id="playerOneImage" name="playerOneImage"
+		source="@Embed('Player/playerOne.png')"
+		horizontalAlign="center"
+		visible="false" />
+		
+	<mx:Image id="playerTwoImage" name="playerTwoImage"
+		source="@Embed('Player/playerTwo.png')"
+		horizontalAlign="center"
+		visible="false" />
+		
+	<mx:Label name="playerScoreLabel" id="playerScoreLabel"
+		textAlign="center" 
+		fontFamily="Arial" fontWeight="bold" fontSize="75" />
+		
+	<mx:Script>
+		<![CDATA[
+			
+			private function constructor():void {
+				resize();
+			}
+			
+			private function resize():void {
+				playerOneImage.width = width;
+				playerTwoImage.width = width;
+				playerOneImage.height = (height / 3) * 2;
+				playerTwoImage.height = (height / 3) * 2;
+				playerOneImage.x = (width / 2) - (playerOneImage.width / 2);
+				playerTwoImage.x = (width / 2) - (playerTwoImage.width / 2);
+				playerOneImage.y = height - playerOneImage.height;
+				playerTwoImage.y = height - playerTwoImage.height;
+				
+				playerScoreLabel.width = width;
+				playerScoreLabel.height = height - playerOneImage.height;
+				playerScoreLabel.x = 0;
+				playerScoreLabel.y = 0;
+				
+				render();
+			}
+			
+			private function enterFrame():void {
+				switch (Main.status) {
+					case Main.PAUSED:
+						paused();
+						break;
+					case Main.STARTING:
+						starting();
+						break;
+					case Main.STOPPING:
+						stopping();
+						break;
+					case Main.PLAYER_ONE_THINKING:
+						playerOneThinking();
+						break;
+					case Main.PLAYER_TWO_THINKING:
+						playerTwoThinking();
+						break;
+					case Main.PLAYER_ONE_CLICKED:
+						playerOneClicked();
+						break;
+					case Main.PLAYER_TWO_CLICKED:
+						playerTwoClicked();
+						break;
+					case Main.PLAYER_ONE_WIN:
+						playerOneWin();
+						break;
+					case Main.PLAYER_TWO_WIN:
+						playerTwoWin();
+						break;
+					case Main.TIE:
+						tie();
+						break;
+					default:
+						other();
+				}
+			}
+			
+			private function render():void {
+				playerScoreLabel.text = "Score:  " + score.toString();
+			}
+			
+			private function paused():void {
+				// empty body
+			}
+			
+			private function starting():void {
+				// empty body
+			}
+			
+			private function stopping():void {
+				// empty body
+			}
+			
+			private function playerOneThinking():void {
+				if (playerNumber != Main.PLAYER_ONE) {
+					return;
+				}
+			}
+			
+			private function playerTwoThinking():void {
+				if (playerNumber != Main.PLAYER_TWO) {
+					return;
+				}
+			}
+			
+			private function playerOneClicked():void {
+				if (playerNumber != Main.PLAYER_ONE) {
+					return;
+				}
+			}
+			
+			private function playerTwoClicked():void {
+				if (playerNumber != Main.PLAYER_TWO) {
+					return;
+				}
+			}
+			
+			private function playerOneWin():void {
+				if (playerNumber != Main.PLAYER_ONE) {
+					return;
+				}
+			}
+			
+			private function playerTwoWin():void {
+				if (playerNumber != Main.PLAYER_TWO) {
+					return;
+				}
+			}
+			
+			private function tie():void {
+				// emptyb ody
+			}
+			
+			private function other():void {
+				// empty body
+			}
+			
+			public function incrementScore():void {
+				score++;
+				
+				resize();
+			}
+			
+			public function setPlayerNumber(playerNumber:Number):void {
+				switch (playerNumber) {
+					case Main.PLAYER_ONE:
+						playerOneImage.visible = true;
+						playerTwoImage.visible = false;
+						break;
+					case Main.PLAYER_TWO:
+						playerOneImage.visible = false;
+						playerTwoImage.visible = true;
+						break;
+					default:
+						playerOneImage.visible = false;
+						playerTwoImage.visible = false;
+						playerNumber = Main.DEFAULT;
+				}
+				
+				this.playerNumber = playerNumber;
+			}
+			
+			private var playerNumber:Number = Main.DEFAULT;
+			
+			private var score:Number = 0;
+			
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>

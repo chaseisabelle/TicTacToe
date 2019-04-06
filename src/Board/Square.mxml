@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderStyle="none"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	click="click(event);"
+	mouseOver="mouseOver();"
+	mouseOut="mouseOut();"
+	enterFrame="enterFrame();"
+	resize="resize();"
+	initialize="constructor();">
+	
+	<mx:Script>
+		<![CDATA[
+			import MediaObject.MediaObject;
+			
+			private function constructor():void {
+				resize();
+			}
+			
+			private function resize():void {
+				render();
+			}
+			
+			private function enterFrame():void {
+				switch (Main.status) {
+					case Main.PAUSED:
+						paused();
+						break;
+					case Main.STARTING:
+						starting();
+						break;
+					case Main.STOPPING:
+						stopping();
+						break;
+					case Main.PLAYER_ONE_THINKING:
+						playerOneThinking();
+						break;
+					case Main.PLAYER_TWO_THINKING:
+						playerTwoThinking();
+						break;
+					case Main.PLAYER_ONE_CLICKED:
+						playerOneClicked();
+						break;
+					case Main.PLAYER_TWO_CLICKED:
+						playerTwoClicked();
+						break;
+					case Main.PLAYER_ONE_WIN:
+						playerOneWin();
+						break;
+					case Main.PLAYER_TWO_WIN:
+						playerTwoWin();
+						break;
+					case Main.TIE:
+						tie();
+						break;
+					default:
+						other();
+				}
+				
+				if (highlightFlag && occupation == Main.DEFAULT && 
+						(Main.status == Main.PLAYER_ONE_THINKING || Main.status == Main.PLAYER_TWO_THINKING)) {
+					if (highlightAlpha < 0) {
+						highlightAlpha = 0;
+					} else if (highlightAlpha < 1) {
+						highlightAlpha += alphaIncrementer;
+					} else if (highlightAlpha > 1) {
+						highlightAlpha = 1;
+					}
+					
+					render();
+				} else if (highlightAlpha > 0) {
+					highlightAlpha -= alphaIncrementer;
+					
+					render();
+				}
+				
+				switch (occupation) {
+					case Main.X:
+						if (xAlpha < 1) {
+							xAlpha += alphaIncrementer;
+							render();
+						}
+						
+						break;
+					case Main.O:
+						if (oAlpha < 1) {
+							oAlpha += alphaIncrementer;
+							render();
+						}
+						
+						break;
+					default:
+						// nothing
+				}
+			}
+			
+			private function render():void {
+				graphics.clear();
+				
+				graphics.beginFill(highlightColor, highlightAlpha);
+				graphics.drawRoundRect(padding, padding, width - (2 * padding), height - (2 * padding), width / 5, height / 5);
+				graphics.endFill();
+				
+				switch (occupation) {
+					case Main.X:
+						graphics.lineStyle(xThickness, xColor, xAlpha);
+						
+						graphics.moveTo(padding, padding);
+						graphics.lineTo(width - padding, height - padding);
+						graphics.moveTo(width - padding, padding);
+						graphics.lineTo(padding, height - padding);
+						
+						break;
+					case Main.O:
+						graphics.lineStyle(oThickness, oColor, oAlpha);
+						
+						graphics.drawEllipse(padding, padding, width - (2 * padding), height - (2 * padding));
+					
+						break;
+					default:
+						// nothing
+				}
+			}
+			
+			private function paused():void {
+				// empty body
+			}
+			
+			private function starting():void {
+				// empty body
+			}
+			private function stopping():void {
+				// empty body
+			}
+			
+			private function playerOneThinking():void {
+				// empty body
+			}
+			
+			private function playerTwoThinking():void {
+				// empty body
+			}
+			
+			private function playerOneClicked():void {
+				// empty body
+			}
+			
+			private function playerTwoClicked():void {
+				// empty body
+			}
+			
+			private function playerOneWin():void {
+				// empty ody
+			}
+			
+			private function playerTwoWin():void {
+				// empty body
+			}
+			
+			private function tie():void {
+				// emptyb ody
+			}
+			
+			private function other():void {
+				// empty body
+			}
+			
+			public function click(event:Event):void {
+				if (occupation != Main.DEFAULT) {
+					return;
+				}
+				
+				if (Main.status == Main.PLAYER_ONE_THINKING && event.target == this) {
+					MediaObject.MediaObject.playerOneClickSound.play();
+					occupation = Main.PLAYER_ONE;
+					Main.status = Main.PLAYER_ONE_CLICKED;
+				}
+				
+				if (Main.status == Main.PLAYER_TWO_THINKING && !event) {
+					MediaObject.MediaObject.playerTwoClickSound.play();
+					occupation = Main.PLAYER_TWO;
+					Main.status = Main.PLAYER_TWO_CLICKED;
+				}
+			}
+			
+			private function mouseOver():void {
+				highlightFlag = true;
+			}
+			
+			private function mouseOut():void {
+				highlightFlag = false;
+			}
+			
+			public function reset():void {
+				occupation = Main.DEFAULT;
+				
+				xAlpha = oAlpha = 0;
+				
+				resize();
+			}
+
+			public var occupation:Number = Main.DEFAULT;
+			
+			public static const padding:Number = 25;
+			
+			public static var xThickness:Number = 10;
+			public static var xColor:uint = 0x000000;
+			private var xAlpha:Number = 0;
+			
+			public static var oThickness:Number = xThickness;
+			public static var oColor:uint = xColor;
+			private var oAlpha:Number = 0;
+			
+			private var highlightFlag:Boolean = false;
+			public static var highlightColor:uint = 0xFF00FF;
+			private var highlightAlpha:Number = 0;
+			
+			public static var alphaIncrementer:Number = 0.05;
+			
+			public static const TOP:Number = 1;
+			public static const MIDDLE:Number = 2;
+			public static const BOTTOM:Number = 3;
+			public static const LEFT:Number = 1;
+			public static const CENTER:Number = 2;
+			public static const RIGHT:Number = 3;
+			
+			public var row:Number = TOP;
+			public var column:Number = LEFT;
+			
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>

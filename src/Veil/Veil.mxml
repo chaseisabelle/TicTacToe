@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:Game="Game.*" xmlns:Background="Game.Background.*" xmlns:Board="Board.*"
+	width="100%" height="100%"
+	x="0" y="0"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	enterFrame="enterFrame();"
+	resize="resize();"
+	initialize="constructor();">
+	
+	<mx:Script>
+		<![CDATA[
+			import Board.Board;
+			import Game.Game;
+			
+			private function constructor():void {
+				alpha = 1;
+				visible = true;
+				
+				resize();
+			}
+			
+			private function resize():void {
+				render();
+			}
+			
+			private function enterFrame():void {
+				switch (Main.status) {
+					case Main.PAUSED:
+						paused();
+						break;
+					case Main.STARTING:
+						starting();
+						break;
+					case Main.STOPPING:
+						stopping();
+						break;
+					case Main.PLAYER_ONE_THINKING:
+						playerOneThinking();
+						break;
+					case Main.PLAYER_TWO_THINKING:
+						playerTwoThinking();
+						break;
+					case Main.PLAYER_ONE_CLICKED:
+						playerOneClicked();
+						break;
+					case Main.PLAYER_TWO_CLICKED:
+						playerTwoClicked();
+						break;
+					case Main.PLAYER_ONE_WIN:
+						playerOneWin();
+						break;
+					case Main.PLAYER_TWO_WIN:
+						playerTwoWin();
+						break;
+					case Main.TIE:
+						tie();
+						break;
+					default:
+						other();
+				}
+			}
+			
+			private function render():void {
+				graphics.clear();
+				
+				graphics.beginFill(veilColor);
+				graphics.drawRect(0, 0, width, height);
+				graphics.endFill();
+			}
+			
+			private function paused():void {
+				// empty body
+			}
+			
+			private function starting():void {
+				if (alpha <= 1) {
+					alpha -= alphaIncrementer;
+				}
+				
+				if (alpha > 1) {
+					alpha = 1;
+				}
+				
+				if (alpha <= 0) {
+					Main.status = Main.PAUSED;
+					visible = false;
+				}
+			}
+			
+			private function stopping():void {
+				if (alpha >= 0) {
+					alpha += alphaIncrementer;
+				}
+				
+				if (alpha < 0) {
+					alpha = 0;
+				}
+				
+				if (alpha >= 1) {
+					Main.status = Main.DEFAULT;
+					visible = false;
+				}
+			}
+			
+			private function playerOneThinking():void {
+				// empty body
+			}
+			
+			private function playerTwoThinking():void {
+				// empty body
+			}
+			
+			private function playerOneClicked():void {
+				// empty boy
+			}
+			
+			private function playerTwoClicked():void {
+				// empty body
+			}
+			
+			private function playerOneWin():void {
+				// emptyb ody
+			}
+			
+			private function playerTwoWin():void {
+				// empty body
+			}
+			
+			private function tie():void {
+				// emptyb ody
+			}
+			
+			private function other():void {
+				// empty body
+			}
+			
+			public static const veilColor:uint = 0xFFFFFF;
+			
+			public static var alphaIncrementer:Number = 0.025;
+			
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>

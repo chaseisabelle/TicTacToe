@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderStyle="none"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	enterFrame="enterFrame();"
+	resize="resize();"
+	initialize="constructor();" xmlns:Board="Board.*">
+	
+	<Board:Square name="topLeft" id="topLeft" />
+	<Board:Square name="topCenter" id="topCenter" />
+	<Board:Square name="topRight" id="topRight" />
+	<Board:Square name="middleLeft" id="middleLeft" />
+	<Board:Square name="middleCenter" id="middleCenter" />
+	<Board:Square name="middleRight" id="middleRight" />
+	<Board:Square name="bottomLeft" id="bottomLeft" />
+	<Board:Square name="bottomCenter" id="bottomCenter" />
+	<Board:Square name="bottomRight" id="bottomRight" />
+	
+	<Board:LineCanvas name="lineCanvas" id="lineCanvas" 
+		x="0" y="0"
+		width="100%" height="100%" />
+	
+	<mx:Script>
+		<![CDATA[
+			import MediaObject.MediaObject;
+		
+			import Game.Game;
+			import mx.collections.ArrayCollection;
+			
+			private function constructor():void {
+				board = this;
+				
+				topLeft.row = topCenter.row = topRight.row = Square.TOP;
+				middleLeft.row = middleCenter.row = middleRight.row = Square.MIDDLE;
+				bottomLeft.row = bottomCenter.row = bottomRight.row = Square.BOTTOM;
+				
+				topLeft.column = middleLeft.column = bottomLeft.column = Square.LEFT;
+				topCenter.column = middleCenter.column = bottomCenter.column = Square.CENTER;
+				topRight.column = middleRight.column = bottomRight.column = Square.RIGHT;
+				
+				squares.addItem(topLeft);
+				squares.addItem(topCenter);
+				squares.addItem(topRight);
+				squares.addItem(middleLeft);
+				squares.addItem(middleCenter);
+				squares.addItem(middleRight);
+				squares.addItem(bottomLeft);
+				squares.addItem(bottomCenter);
+				squares.addItem(bottomRight);
+				
+				resize();
+			}
+			
+			private function enterFrame():void {
+				switch (Main.status) {
+					case Main.PAUSED:
+						paused();
+						break;
+					case Main.STARTING:
+						starting();
+						break;
+					case Main.STOPPING:
+						stopping();
+						break;
+					case Main.PLAYER_ONE_THINKING:
+						playerOneThinking();
+						break;
+					case Main.PLAYER_TWO_THINKING:
+						playerTwoThinking();
+						break;
+					case Main.PLAYER_ONE_CLICKED:
+						playerOneClicked();
+						break;
+					case Main.PLAYER_TWO_CLICKED:
+						playerTwoClicked();
+						break;
+					case Main.PLAYER_ONE_WIN:
+						playerOneWin();
+						break;
+					case Main.PLAYER_TWO_WIN:
+						playerTwoWin();
+						break;
+					case Main.TIE:
+						tie();
+						break;
+					default:
+						other();
+				}
+			}
+			
+			private function resize():void {
+				var i:uint;
+				var s:Square;
+				
+				for (i = 0; i < squares.length; i++) {
+					s = (Square)(squares.getItemAt(i))
+					
+					s.width = width / 3;
+					s.height = height / 3;
+					
+					s.x = (s.column - 1) * (width / 3);
+					s.y = (s.row - 1) * (height / 3);
+				}
+				
+				render();
+			}
+			
+			public function render():void {
+				var a:Square;
+				var b:Square;
+				var c:Square;
+				
+				graphics.clear();
+				
+				// background
+				graphics.beginFill(backgroundColor, backgroundAlpha);
+				graphics.drawRoundRect(0, 0, width, height, width / 5, height / 5);
+				graphics.endFill();
+				
+				// draw the vertical grid lines
+				graphics.lineStyle(gridLineThickness, gridLineColor);
+				graphics.moveTo(width / 3, gridPadding);
+				graphics.lineTo(width / 3, height - gridPadding);
+				graphics.lineStyle(gridLineThickness, gridLineColor);
+				graphics.moveTo((width / 3) * 2, gridPadding);
+				graphics.lineTo((width / 3) * 2, height - gridPadding);
+				
+				// draw the horizontal grid lines
+				graphics.lineStyle(gridLineThickness, gridLineColor);
+				graphics.moveTo(gridPadding, height / 3);
+				graphics.lineTo(width - gridPadding, height / 3);
+				graphics.lineStyle(gridLineThickness, gridLineColor);
+				graphics.moveTo(gridPadding, (height / 3) * 2);
+				graphics.lineTo(width - gridPadding, (height / 3) * 2);
+			}
+			
+			public function check():void {
+				var i:uint;
+				var j:uint;
+				var k:uint;
+				var a:Square;
+				var b:Square;
+				var c:Square;
+				
+				winningSquares = new ArrayCollection();
+				
+				for (i = 0; i < squares.length; i++) {
+					a = (Square)(squares.getItemAt(i));
+					
+					for (j = 0; j < squares.length; j++) {
+						b = (Square)(squares.getItemAt(j));
+						
+						for (k = 0; k < squares.length; k++) {
+							c = (Square)(squares.getItemAt(k));
+							
+							if (a != b && b != c && a != c && 
+									a.occupation != Main.DEFAULT && b.occupation != Main.DEFAULT && c.occupation != Main.DEFAULT &&
+									(a.row == b.row && b.row == c.row && a.row == c.row || 
+									a.column == b.column && b.column == c.column && a.column == c.column ||
+									a.row != b.row && b.row != c.row && a.row != c.row && 
+									a.column != b.column && b.column != c.column && a.column != c.column && 
+									(a.row == Square.MIDDLE && a.column == Square.CENTER || 
+									b.row == Square.MIDDLE && b.column == Square.CENTER || 
+									c.row == Square.MIDDLE && c.column == Square.CENTER))) {
+								if (a.occupation == b.occupation && b.occupation == c.occupation && a.occupation == c.occupation) {
+									winningSquares.addItem(a);
+									winningSquares.addItem(b);
+									winningSquares.addItem(c);
+									
+									if (a.occupation == Main.PLAYER_ONE) {
+										MediaObject.MediaObject.playerOneWinSound.play();
+										Game.Game.game.playerOne.incrementScore();
+										Main.status = Main.PLAYER_ONE_WIN;
+										return;
+									} else {
+										MediaObject.MediaObject.playerTwoWinSound.play();
+										Game.Game.game.playerTwo.incrementScore();
+										Main.status = Main.PLAYER_TWO_WIN;
+										return;
+									}
+								}
+							}
+						}
+					}
+				}
+
+				for (i = 0; i < squares.length; i++) {
+					if (((Square)(squares.getItemAt(i))).occupation == Main.DEFAULT) {
+						return;
+					}
+				}
+				
+				MediaObject.MediaObject.tieSound.play();
+				Main.status = Main.TIE;
+			}
+			
+			public function playerOneThinking():void {
+				// empty body
+			}
+			
+			public function playerTwoThinking():void {
+				if (playerPauseCounter < playerPauseInterval) {
+					playerPauseCounter++;
+				} else {
+					playerPauseCounter = 0;
+					runArtificialIntelligence();
+				}
+			}
+			
+			private function playerOneClicked():void {
+				check();
+				
+				if (Main.status == Main.PLAYER_ONE_CLICKED) {
+					Main.status = Main.PLAYER_TWO_THINKING;
+				}
+			}
+			
+			private function playerTwoClicked():void {
+				check();
+				
+				if (Main.status == Main.PLAYER_TWO_CLICKED) {
+					Main.status = Main.PLAYER_ONE_THINKING;
+				}
+			}
+			
+			private function paused():void {
+				// empty body
+			}
+			
+			private function starting():void {
+				// empty body
+			}
+			
+			private function stopping():void {
+				// empty body
+			}
+			
+			private function playerOneWin():void {
+				// empty body
+			}
+			
+			private function playerTwoWin():void {
+				// empty body
+			}
+			
+			private function tie():void {
+				// empty body
+			}
+			
+			private function other():void {
+				// empty body
+			}
+			
+			public function runArtificialIntelligence():void {
+				var square:Square;
+				
+				do {
+					square = (Square)(squares.getItemAt(Math.round(Math.random() * (squares.length - 1)))); 
+				} while (square.occupation != Main.DEFAULT);
+				
+				square.click(null);
+			}
+			
+			public function reset():void {
+				var i:uint;
+				
+				winningSquares = new ArrayCollection();
+				
+				for (i = 0; i < squares.length; i++) {
+					((Square)(squares.getItemAt(i))).reset();
+				}
+				
+				lineCanvas.reset();
+			}
+			
+			public static var gridLineThickness:Number = 10;
+			public static var gridLineColor:uint = 0x000000;
+			public static var gridPadding:Number = 25;
+			
+			public var backgroundColor:uint = 0xABCDEF;
+			public var backgroundAlpha:Number = 0.5;
+			
+			private var squares:ArrayCollection = new ArrayCollection();
+			
+			public var winningSquares:ArrayCollection = new ArrayCollection();
+			
+			public static var playerPauseInterval:Number = 50;
+			private var playerPauseCounter:Number = 0;
+			
+			public static var singleSwitchSquare:Square;
+			public static var board:Board;
+			
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>

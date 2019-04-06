@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderStyle="none"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	enterFrame="enterFrame();"
+	resize="resize();"
+	initialize="constructor();" xmlns:Board="Board.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.containers.Panel;
+			
+			private function constructor():void {
+				resize();
+			}
+			
+			private function resize():void {
+				if (Main.status == Main.PLAYER_ONE_WIN || Main.status == Main.PLAYER_TWO_WIN) {
+					render();
+				}
+			}
+			
+			private function enterFrame():void {
+				switch (Main.status) {
+					case Main.PAUSED:
+						paused();
+						break;
+					case Main.STARTING:
+						starting();
+						break;
+					case Main.STOPPING:
+						stopping();
+						break;
+					case Main.PLAYER_ONE_THINKING:
+						playerOneThinking();
+						break;
+					case Main.PLAYER_TWO_THINKING:
+						playerTwoThinking();
+						break;
+					case Main.PLAYER_ONE_CLICKED:
+						playerOneClicked();
+						break;
+					case Main.PLAYER_TWO_CLICKED:
+						playerTwoClicked();
+						break;
+					case Main.PLAYER_ONE_WIN:
+						playerOneWin();
+						break;
+					case Main.PLAYER_TWO_WIN:
+						playerTwoWin();
+						break;
+					case Main.TIE:
+						tie();
+						break;
+					default:
+						// nothing here
+				}
+			}
+			
+			private function render():void {
+				a.x = ((Square)(((Board)(parent)).winningSquares.getItemAt(0))).x + (((Square)(((Board)(parent)).winningSquares.getItemAt(0))).width / 2);
+				a.y = ((Square)(((Board)(parent)).winningSquares.getItemAt(0))).y + (((Square)(((Board)(parent)).winningSquares.getItemAt(0))).height / 2);
+				
+				b.x = ((Square)(((Board)(parent)).winningSquares.getItemAt(1))).x + (((Square)(((Board)(parent)).winningSquares.getItemAt(1))).width / 2);
+				b.y = ((Square)(((Board)(parent)).winningSquares.getItemAt(1))).y + (((Square)(((Board)(parent)).winningSquares.getItemAt(1))).height / 2);
+				
+				c.x = ((Square)(((Board)(parent)).winningSquares.getItemAt(2))).x + (((Square)(((Board)(parent)).winningSquares.getItemAt(2))).width / 2);
+				c.y = ((Square)(((Board)(parent)).winningSquares.getItemAt(2))).y + (((Square)(((Board)(parent)).winningSquares.getItemAt(2))).height / 2);
+				
+				graphics.clear();
+				
+				graphics.lineStyle(lineThickness, lineColor, lineAlpha);
+					
+				graphics.moveTo(a.x, a.y);
+				graphics.lineTo(b.x, b.y);
+				graphics.lineTo(c.x, c.y);
+			}
+			
+			private function paused():void {
+				// empty body
+			}
+			
+			private function starting():void {
+				// empty body
+			}
+			
+			private function stopping():void {
+				// empty body
+			}
+			
+			private function playerOneThinking():void {
+				// empty body
+			}
+			
+			private function playerTwoThinking():void {
+				// empty body
+			}
+			
+			private function playerOneClicked():void {
+				// empty boy
+			}
+			
+			private function playerTwoClicked():void {
+				// empty body
+			}
+			
+			private function playerOneWin():void {
+				if (lineAlpha < maxLineAlpha) {
+					lineAlpha += alphaIncrementer;
+					render();
+				}
+			}
+			
+			private function playerTwoWin():void {
+				if (lineAlpha < maxLineAlpha) {
+					lineAlpha += alphaIncrementer;
+					render();
+				}
+			}
+			
+			private function tie():void {
+				// emptyb ody
+			}
+			
+			public function reset():void {
+				lineAlpha = 0;
+				graphics.clear();
+			}
+			
+			private var a:Point = new Point();
+			private var b:Point = new Point();
+			private var c:Point = new Point();
+			
+			public static var lineThickness:Number = 20;
+			public static var lineColor:uint = 0x000000;
+			public static var maxLineAlpha:Number = 0.5;
+			private var lineAlpha:Number = 0;
+			
+			public static var alphaIncrementer:Number = 0.05;
+			
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>
